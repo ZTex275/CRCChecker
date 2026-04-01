@@ -80,6 +80,12 @@ namespace CRCChecker
             SupportedLanguage.Russian => "CRC32:"
         };
 
+        public string FileVersionLabel => CurrentLanguage switch
+        {
+            SupportedLanguage.English => "File Version:",
+            SupportedLanguage.Russian => "Версия файла:"
+        };
+
         public string SelectFileTitle => CurrentLanguage switch
         {
             SupportedLanguage.English => "Select a file to calculate CRC32 checksum",
@@ -146,6 +152,7 @@ namespace CRCChecker
             OnPropertyChanged(nameof(FileSizeLabel));
             OnPropertyChanged(nameof(LastModifiedLabel));
             OnPropertyChanged(nameof(CRC32Label));
+            OnPropertyChanged(nameof(FileVersionLabel));
             OnPropertyChanged(nameof(SelectFileTitle));
             OnPropertyChanged(nameof(AllFilesFilter));
             OnPropertyChanged(nameof(NoFileSelectedMessage));

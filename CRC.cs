@@ -101,7 +101,7 @@ namespace CRCChecker
                     var rawBytes = new byte[stream.Length];
                     stream.Read(rawBytes, 0, (int)stream.Length);
                     int ulCrc32 = (int)new CRC(CRCCode.CRC32).CrcTableFast(rawBytes);
-                    Debug.WriteLine($"Контрольная сумма: {ulCrc32}");
+                    Debug.WriteLine($"Контрольная сумма: {ulCrc32.ToString("X2")}");
                     return ulCrc32;
                 }
             }

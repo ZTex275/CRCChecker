@@ -143,6 +143,7 @@
                 <RowDefinition Height="Auto" />
                 <RowDefinition Height="Auto" />
                 <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
             </Grid.RowDefinitions>
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="Auto" MinWidth="150" />
@@ -193,10 +194,23 @@
                 Grid.Column="0"
                 FontWeight="Bold"
                 Style="{StaticResource TextStyle}"
+                Text="{Binding Source={x:Static local:LocalizationManager.Instance}, Path=FileVersionLabel}" />
+            <TextBlock
+                x:Name="FileVersionText"
+                Grid.Row="3"
+                Grid.Column="1"
+                Style="{StaticResource TextStyle}"
+                Text="-" />
+
+            <TextBlock
+                Grid.Row="4"
+                Grid.Column="0"
+                FontWeight="Bold"
+                Style="{StaticResource TextStyle}"
                 Text="{Binding Source={x:Static local:LocalizationManager.Instance}, Path=CRC32Label}" />
             <TextBlock
                 x:Name="CRC32Text"
-                Grid.Row="3"
+                Grid.Row="4"
                 Grid.Column="1"
                 FontFamily="Consolas"
                 Style="{StaticResource TextStyle}"

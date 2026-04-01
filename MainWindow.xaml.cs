@@ -1,8 +1,6 @@
-﻿using System;
+﻿using Microsoft.Win32;
 using System.IO;
 using System.Windows;
-using System.Windows.Controls;
-using Microsoft.Win32;
 
 namespace CRCChecker
 {
@@ -79,17 +77,6 @@ namespace CRCChecker
             }
         }
 
-        //private void CalculateButton_Click(object sender, RoutedEventArgs e)
-        //{
-        //    if (string.IsNullOrEmpty(selectedFilePath) || !File.Exists(selectedFilePath))
-        //    {
-        //        MessageBox.Show("Please select a valid file first.", "No File Selected", MessageBoxButton.OK, MessageBoxImage.Warning);
-        //        return;
-        //    }
-
-        //    CalculateCRC32();
-        //}
-
         private void DisplayFileInfo()
         {
             try
@@ -99,7 +86,20 @@ namespace CRCChecker
                 var fileInfo = new FileInfo(selectedFilePath);
                 FileNameText.Text = fileInfo.Name;
                 FileSizeText.Text = FormatFileSize(fileInfo.Length);
-                LastModifiedText.Text = fileInfo.LastWriteTime.ToString("yyyy-MM-dd HH:mm:ss");
+                LastModifiedText.Text = fileInfo.LastWriteTime.ToString("dd.MM.yyyy HH:mm:ss");
+                
+                // Get file version info
+                try
+                {
+                    var fileVersionInfo = System.Diagnostics.FileVersionInfo.GetVersionInfo(selectedFilePath);
+                    string version = fileVersionInfo.FileVersion;
+                    FileVersionText.Text = !string.IsNullOrEmpty(version) ? version : "1.0.0.0";
+                }
+                catch
+                {
+                    FileVersionText.Text = "N/A";
+                }
+                
                 CalculateCRC32();
             }
             catch (Exception ex)
@@ -117,7 +117,7 @@ namespace CRCChecker
                 var startTime = DateTime.Now;
                 
                 // Run calculation in background to keep UI responsive
-                System.Threading.Tasks.Task.Run(() =>
+                Task.Run(() =>
                 {
                     try
                     {
