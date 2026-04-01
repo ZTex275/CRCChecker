@@ -9,18 +9,65 @@ namespace CRCChecker
     public partial class MainWindow : Window
     {
         private string? selectedFilePath;
+        private LocalizationManager localizationManager;
 
         public MainWindow()
         {
             InitializeComponent();
+            localizationManager = LocalizationManager.Instance;
+            localizationManager.LanguageChanged += OnLanguageChanged;
+            DataContext = localizationManager;
+            
+            // Set initial button states
+            UpdateLanguageButtonStates();
+        }
+
+        private void OnLanguageChanged()
+        {
+            // Update UI elements that don't use binding
+            UpdateLanguageButtonStates();
+            
+            // Force update of bindings
+            if (selectedFilePath != null)
+            {
+                FilePathTextBox.Text = selectedFilePath;
+            }
+            else
+            {
+                FilePathTextBox.Text = localizationManager.NoFileSelected;
+            }
+        }
+
+        private void UpdateLanguageButtonStates()
+        {
+            if (EnglishButton != null && RussianButton != null)
+            {
+                EnglishButton.Style = localizationManager.CurrentLanguage == SupportedLanguage.English 
+                    ? FindResource("ActiveLanguageButtonStyle") as Style 
+                    : FindResource("LanguageButtonStyle") as Style;
+                    
+                RussianButton.Style = localizationManager.CurrentLanguage == SupportedLanguage.Russian 
+                    ? FindResource("ActiveLanguageButtonStyle") as Style 
+                    : FindResource("LanguageButtonStyle") as Style;
+            }
+        }
+
+        private void EnglishButton_Click(object sender, RoutedEventArgs e)
+        {
+            localizationManager.CurrentLanguage = SupportedLanguage.English;
+        }
+
+        private void RussianButton_Click(object sender, RoutedEventArgs e)
+        {
+            localizationManager.CurrentLanguage = SupportedLanguage.Russian;
         }
 
         private void BrowseButton_Click(object sender, RoutedEventArgs e)
         {
             var openFileDialog = new OpenFileDialog
             {
-                Title = "Select a file to calculate CRC32 checksum",
-                Filter = "All files (*.*)|*.*",
+                Title = localizationManager.SelectFileTitle,
+                Filter = localizationManager.AllFilesFilter,
                 RestoreDirectory = true
             };
 
@@ -57,7 +104,7 @@ namespace CRCChecker
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Error reading file information: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show($"{localizationManager.ErrorReadingFile}{ex.Message}", localizationManager.ErrorTitle, MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
 
@@ -89,7 +136,7 @@ namespace CRCChecker
                     {
                         Dispatcher.Invoke(() =>
                         {
-                            MessageBox.Show($"Error calculating CRC32: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                            MessageBox.Show($"{localizationManager.ErrorCalculatingCRC}{ex.Message}", localizationManager.ErrorTitle, MessageBoxButton.OK, MessageBoxImage.Error);
                             BrowseButton.IsEnabled = true;
                         });
                     }
@@ -97,7 +144,7 @@ namespace CRCChecker
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Error starting CRC32 calculation: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show($"{localizationManager.ErrorStartingCalculation}{ex.Message}", localizationManager.ErrorTitle, MessageBoxButton.OK, MessageBoxImage.Error);
                 BrowseButton.IsEnabled = true;
             }
         }
